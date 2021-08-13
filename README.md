@@ -4,7 +4,7 @@ Slinker offers a succinct and complementary method to visualise RNA-Seq data thr
 
 Please refer to the [wiki](https://github.com/Oshlack/Slinker/wiki) for further information on what it is and how it works!
 
-<img style="display:block; margin-left: auto; margin-right: auto;" src="https://github.com/Oshlack/Slinker/blob/main/images/introduction.gif" alt="Slinker in Action"\/>
+<img style="display:block; margin-left: auto; margin-right: auto;" src="https://github.com/Oshlack/Slinker/blob/main/images/introduction.gif" alt="Slinker in Action"/>
 
 <hr>
 
