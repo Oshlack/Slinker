@@ -10,5 +10,13 @@
 Imports
 ---------------------------------------------------------------------------------------------------------------------'''
 
+''' External '''
+import plotly
+import sys
+
 ''' Internal '''
 from Slinker.slinker import Slinker
+
+if plotly.__version__ != "4.14.3":
+    message("Incorrect Plotly version, please install version 4.14.3.")
+    sys.exit()
