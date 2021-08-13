@@ -104,6 +104,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.DS_Store
 env/
 venv/
 ENV/
@@ -127,3 +128,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+references/Homo_sapiens.GRCh37.87.chr.tsl1.gtf
+references/Homo_sapiens.GRCh37.dna.primary_assembly.fa.fai
+references/Homo_sapiens.GRCh38.99.chr.tsl1.gtf
+references/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+references/Homo_sapiens.GRCh38.dna.primary_assembly.fa.fai

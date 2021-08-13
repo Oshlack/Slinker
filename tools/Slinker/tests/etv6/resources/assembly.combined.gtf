@@ -1,0 +1,33 @@
+# /oshlack_lab/breon.schmidt/2_projects/2_Slinker/software/development/tools/stringtie/stringtie /oshlack_lab/breon.schmidt/2_projects/2_Slinker/software/results/test/source/genes/ETV6//healthy_Aligned.sortedByCoord.out.healthy.gene.bam -G /oshlack_lab/breon.schmidt/2_projects/2_Slinker/software/development/references/Homo_sapiens.GRCh37.87.chr.tsl1.gtf -p 4 -o /oshlack_lab/breon.schmidt/2_projects/2_Slinker/software/results/test/temp/1_assembly/healthy_Aligned.sortedByCoord.out.healthy.assembly.gtf --conservative -v
+# StringTie version 2.1.2
+12	StringTie	transcript	11802788	12048336	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "298.352112"; FPKM "49756.667969"; TPM "33330.710938";
+12	StringTie	exon	11802788	11803094	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; exon_number "1"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "344.245422";
+12	StringTie	exon	11905384	11905513	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; exon_number "2"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1066.179321";
+12	StringTie	exon	11992074	11992238	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; exon_number "3"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "711.253418";
+12	StringTie	exon	12006361	12006495	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; exon_number "4"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "221.607407";
+12	StringTie	exon	12022358	12022903	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; exon_number "5"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "211.307678";
+12	StringTie	exon	12037379	12037521	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; exon_number "6"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "203.972031";
+12	StringTie	exon	12038860	12038960	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; exon_number "7"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1967.236572";
+12	StringTie	exon	12043875	12048336	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.1"; exon_number "8"; reference_id "ENST00000396373"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "235.777115";
+12	StringTie	transcript	11802878	11979490	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.2"; reference_id "ENST00000541426"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1423.980713"; FPKM "237479.578125"; TPM "159081.453125";
+12	StringTie	exon	11802878	11803094	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.2"; exon_number "1"; reference_id "ENST00000541426"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "839.718689";
+12	StringTie	exon	11905384	11905513	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.2"; exon_number "2"; reference_id "ENST00000541426"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1917.577148";
+12	StringTie	exon	11978578	11978647	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.2"; exon_number "3"; reference_id "ENST00000541426"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "2620.314209";
+12	StringTie	exon	11979336	11979490	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.2"; exon_number "4"; reference_id "ENST00000541426"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1287.683838";
+12	StringTie	transcript	11802945	11905809	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.3"; reference_id "ENST00000544715"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1409.088379"; FPKM "234995.953125"; TPM "157417.750000";
+12	StringTie	exon	11802945	11803094	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.3"; exon_number "1"; reference_id "ENST00000544715"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "999.820496";
+12	StringTie	exon	11869521	11869677	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.3"; exon_number "2"; reference_id "ENST00000544715"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1363.501465";
+12	StringTie	exon	11905384	11905809	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.3"; exon_number "3"; reference_id "ENST00000544715"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1569.997681";
+12	StringTie	transcript	11802945	11993802	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.4"; cov "835.867432"; FPKM "139398.968750"; TPM "93379.789062";
+12	StringTie	exon	11802945	11803094	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.4"; exon_number "1"; cov "530.191162";
+12	StringTie	exon	11869521	11869677	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.4"; exon_number "2"; cov "723.046204";
+12	StringTie	exon	11905384	11905513	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.4"; exon_number "3TE"; cov "1010.354553";
+12	StringTie	exon	11992158	11992238	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.4"; exon_number "4EE"; cov "674.012390";
+12	StringTie	exon	11993495	11993702	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.4"; exon_number "5NE"; cov "1001.522156";
+12	StringTie	transcript	11905435	11993802	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.5"; reference_id "ENST00000545027"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "966.837830"; FPKM "161241.109375"; TPM "108011.273438";
+12	StringTie	exon	11905435	11905513	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.5"; exon_number "1"; reference_id "ENST00000545027"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1037.786621";
+12	StringTie	exon	11992074	11992238	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.5"; exon_number "2"; reference_id "ENST00000545027"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "711.043213";
+12	StringTie	exon	11993395	11993802	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.5"; exon_number "3"; reference_id "ENST00000545027"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "1056.546509";
+12	StringTie	transcript	12038871	12044544	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.6"; reference_id "ENST00000266427"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "4017.141357"; FPKM "669945.187500"; TPM "448779.031250";
+12	StringTie	exon	12038871	12038960	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.6"; exon_number "1"; reference_id "ENST00000266427"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "4015.439941";
+12	StringTie	exon	12044475	12044544	1000	+	.	gene_id "STRG.1"; transcript_id "STRG.1.6"; exon_number "2"; reference_id "ENST00000266427"; ref_gene_id "ENSG00000139083"; ref_gene_name "ETV6"; cov "4019.329346";
