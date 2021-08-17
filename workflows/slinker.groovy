@@ -189,7 +189,7 @@ extract_reads = {
 	def bed_file = output.dir+"/"+gene+".region.bed"
 
 	transform(".bam") to (".gene.bam"){
-		exec """$samtools view -@ $threads -Sb -h -L $bed_file $input.bam > $output.gene.bam""", "samtools"
+		exec """$SAMTOOLS view -@ $threads -Sb -h -L $bed_file $input.bam > $output.gene.bam""", "samtools"
 	}
 
 }
@@ -199,7 +199,7 @@ extract_reads = {
 qsort_bam = {
 	transform('.gene.bam') to('.qsort.bam') {
 		output.dir=temp_gene_info
-		exec """$samtools sort -n $input.bam > $output.qsort.bam""", "samtools"
+		exec """$SAMTOOLS sort -n $input.bam > $output.qsort.bam""", "samtools"
 	}
 }
 
@@ -261,9 +261,8 @@ get_fastq = {
 
 	transform(".qsort.bam") to (".o.fastq", ".0.fastq", ".all.fastq"){
 		output.dir = temp_seq
-		exec """$samtools fastq -o $output1 -0 $output2 -s /dev/null -n $input.qsort.bam"""
+		exec """$SAMTOOLS fastq -o $output1 -0 $output2 -s /dev/null -n $input.qsort.bam"""
 		exec """cat $output1 $output2 > $output3"""
-		//exec """bamToFastq -i $input.qsort.bam -fq $output.R1.fastq -fq2 $output.R2.fastq""", fastq
 	}
 	
 }
@@ -316,7 +315,7 @@ star_index = {
 	output.dir = resources_folder
 	from(".bam") produce(branch.name+"_Aligned.sortedByCoord.out.bam.bai"){
 		def sample_name = branch.name
-		exec """$samtools index $input""", "samtools"
+		exec """$SAMTOOLS index $input""", "samtools"
 	}
 
 }
