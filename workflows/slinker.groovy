@@ -30,11 +30,8 @@
 // location of this program, i.e. /path/to/program/, default is level up from this script
 core = System.getenv("SLINKERDIR")
 
-
-// tools
-STRINGTIE = System.getenv("stringtie")
-SAMTOOLS = System.getenv("samtools")
-STAR = System.getenv("star")
+// Internal tools
+load core+"/workflows/tools.groovy"
 FLATTEN = core+"/scripts/generate_flattened_gtf.R"
 VIS = core+"/scripts/slinker_vis.py"
 
