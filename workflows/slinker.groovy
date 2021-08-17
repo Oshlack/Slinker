@@ -71,10 +71,25 @@ if(binding.variables.containsKey("genome")){
 		GTF_REF = core+"/references/"+"Homo_sapiens.GRCh37.87.chr.tsl1.gtf"
 		GENOME = core+"/references/"+"Homo_sapiens.GRCh37.dna.primary_assembly.fa"
 	} else {
-		print("Please enter a valid genome version that bams are aligned to (19/38)'")
+		print("Using user supplied GTF and FASTA")
+	}
+} else {
+
+	if(binding.variables.containsKey("fasta")){
+		GENOME = fasta
+	} else {
+		print("Please either set the genome version OR supply a valid reference FASTA path.'")
+		System.exit(0)
+	}
+
+	if(binding.variables.containsKey("gtf")){
+		GTF_REF = gtf
+	} else {
+		print("Please either set the genome version OR supply a valid reference gtf path.'")
 		System.exit(0)
 	}
 }
+
 
 if(!binding.variables.containsKey("threads")){
 	threads=1
