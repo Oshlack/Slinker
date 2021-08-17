@@ -34,12 +34,11 @@ build path
 
 class Slinker():
 
-	def __init__(self, gene=False, case_id=False, genome=38, resources="resources", padding=10):
+	def __init__(self, gene=False, case_id=False, resources="resources", padding=10):
 
 		self.gene = gene
 		self.case_id = case_id
 		self.resources = resources
-		self.genome = genome
 		self._error_check()
 
 		'''Plot'''

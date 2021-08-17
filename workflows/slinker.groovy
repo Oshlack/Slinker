@@ -325,7 +325,7 @@ star_index = {
 visualise = {
 
 	output.dir = plots_folder
-	exec """python $VIS $gene $case_sample $resources_folder $genome $output.dir"""
+	exec """python $VIS $gene $case_sample $resources_folder $output.dir"""
 
 }
 
