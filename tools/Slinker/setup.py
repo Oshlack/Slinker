@@ -16,6 +16,7 @@ setup(
         "numpy==1.18.1",
         "pandas==1.2.3",
 		"pybedtools==0.8.1",
-		"pysam==0.15.4", 'Canvas'
+		"pysam==0.15.4", 
+        'Canvas'
     ]
 )
