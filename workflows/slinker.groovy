@@ -249,7 +249,6 @@ create_st = {
 
 	from("flattened.gtf")  produce(resources_folder + "/st.fasta"){
 		output.dir=resources_folder
-		print(GENOME)
 		def out_file = resources_folder + "/st.fasta"
 		exec """gffread $input -g $GENOME -w $out_file -W""", "supertranscript"
 	}
