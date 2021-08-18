@@ -80,6 +80,7 @@ class Coverage():
 		''' Print a coverage track onto the supplied canvas plot. '''
 
 		''' Get coverage histogram '''
+
 		x = np.array(range(region["start"], region["end"]))
 		y = np.zeros(region["end"]-region["start"])
 
@@ -91,14 +92,12 @@ class Coverage():
 						 offset = region["offset"][i],
 						 log=log, cpm=cpm)
 
-		'''
 		if cpm and not log:
-			coverage_array = coverage_array / self.sample.lib_size * 1000000
+			y = y / self.sample.lib_size * 1000000
 		elif cpm and log:
-			coverage_array = np.log2(coverage_array + 1) / self.sample.lib_size * 1000000
+			y = np.log2(y + 1) / self.sample.lib_size * 1000000
 		elif log:
-			coverage_array = np.log2(coverage_array + 1)
-		'''
+			y = np.log2(y + 1)
 
 		if not isinstance(coord_map, bool):
 			alt_x = []

@@ -6,7 +6,7 @@
 #
 #=======================================================================================================================
 
-''' --------------------------------------------------------------------------------------------------------------------
+''' ---------------------------pip----------------------------------------------------------------------------------------
 Imports
 ---------------------------------------------------------------------------------------------------------------------'''
 
@@ -51,6 +51,8 @@ class Slinker():
 		'''Assembly'''
 		self.color_event = self._get_colors()
 		self.assembly = build.Assembly(gene, resources, colors=self.color_event)
+		skipped_exons = self.assembly.skipped_exon(self.samples, self.assembly.st.st_region, self.case_id, min_support=10)
+		self.assembly.novel_regions["se"]["pos"] = skipped_exons
 
 	def _get_colors(self):
 
@@ -82,7 +84,6 @@ class Slinker():
 	def plot(self, height=None, width=1000, log=False, cpm=True,
 			 min_junctions=False, title="Slinker Figure", save=False):
 
-
 		'''Progressively build a Slinker layout using the CANVAS paradigm.
 		   Note, dictionary id must reflect row no. Nested will overlap.'''
 
@@ -108,8 +109,8 @@ class Slinker():
 					 'line': 'rgba(87, 22, 162, 0.5)',
 					 'coord_map': self.assembly.st.st_map,
 					 'hover_template': hover_template,
-					 'log': False,
-					 'cpm': False}
+					 'log': log,
+					 'cpm': cpm}
 
 		layout[3] = {'type': 'junctions',
 					 'data': self.case,
@@ -152,8 +153,8 @@ class Slinker():
 						 'line': 'rgba(3, 181, 170, 0.3)',
 						 'coord_map': self.assembly.st.st_map,
 						 'hover_template': hover_template,
-						 'log': False,
-						 'cpm': False}
+						 'log': log,
+						 'cpm': cpm}
 
 			layout[c + 1] = {'type': 'junctions',
 						 'data': control,
@@ -177,7 +178,6 @@ class Slinker():
 
 		if "highlights" not in locals():
 			highlights = False
-
 
 		''' The create the plot '''
 		plot = cv.Plot(layout, self.assembly.st.st_region, highlights=highlights, title=title,

@@ -15,7 +15,6 @@ from Slinker.build.supertranscript import ST
 
 ''' External '''
 import pandas as pd
-import re
 from Canvas.track.annotation import GTF
 from Canvas.track.annotation import Gene
 
@@ -42,6 +41,7 @@ class Assembly():
 		self.colors = colors
 		self.novel_regions = self.find_novel()
 
+
 	def find_gaps(self, assembly):
 
 		first = True
@@ -49,17 +49,18 @@ class Assembly():
 		padding = 100000
 
 		for i, e in assembly.iterrows():
+
 			if first:
 				start = e[4]
 				first = False
-				gaps.append((start - padding, start))
+				#gaps.append((start - padding, start))
 				continue
 
 			if abs(self.st.st_map[start] - self.st.st_map[e[3]]) > 1:
 				gaps.append((start, e[3]))
 			start = e[4]
 
-		gaps.append((start, start + padding))
+		#gaps.append((start, start + padding))
 
 		return list(set(gaps))
 
@@ -93,15 +94,14 @@ class Assembly():
 
 			novel_adj = (novel[1], novel[0]) if self.st.st_map[novel[1]] < self.st.st_map[novel[0]] else novel
 
-			if self.is_extended_exon(novel_adj, ref_exons):
-				novel_results["ee"]["pos"].append(self.is_extended_exon(novel_adj, ref_exons))
+			if self.is_novel_exon(novel_adj, ref_exons):
+				novel_results["ne"]["pos"].append(self.is_novel_exon(novel_adj, ref_exons))
 			elif self.is_retained_intron(novel_adj, ref_exons):
 				novel_results["ri"]["pos"].append(self.is_retained_intron(novel_adj, ref_exons))
-			elif self.is_novel_exon(novel_adj, ref_exons):
-				novel_results["ne"]["pos"].append(self.is_novel_exon(novel_adj, ref_exons))
+			elif self.is_extended_exon(novel_adj, ref_exons):
+				novel_results["ee"]["pos"].append(self.is_extended_exon(novel_adj, ref_exons))
 			elif self.is_truncated_exon(novel_adj, ref_exons):
 				novel_results["te"]["pos"].append(self.is_truncated_exon(novel_adj, ref_exons))
-
 			else:
 				continue
 
@@ -120,48 +120,55 @@ class Assembly():
 		gaps = self.find_gaps(reference)
 
 		for gap in gaps:
+			n_start, n_end = self._strand_correct(novel[0],  novel[1])
 			start, end = self._strand_correct(self.st.st_map[novel[0]],  self.st.st_map[novel[1]])
 
-			if (novel[0] > gap[0]) & (novel[1] < gap[1]):
+			if (n_start > gap[0]) & (n_end < gap[1]):
+
 				return pd.Interval(start, end)
 
 		return False
 
-	def skipped_exon(self, samples):
+	def skipped_exon(self, samples, region, case_id, min_support=10):
 
-		# Get junctions only in the case
+		# Do some storage
 		case_junctions = []
-
-		for index, junction in samples[0].junctions[samples[0].junctions["unique"] > 10].iterrows():
-			case_junctions.append((junction["start"], junction["end"]))
-
 		control_junctions = []
-		for i in range(1, len(samples)):
-			for index, junction in samples[i].junctions[samples[i].junctions["unique"] > 10].iterrows():
-				control_junctions.append((junction["start"], junction["end"]))
+
+		for sample in samples:
+			sample_junctions = sample.junctions.get(region, min_support, sam=sample.sam)
+
+			for index, junction in sample_junctions.iterrows():
+				coords = index.split(":")[-1].split("-")
+				start = int(coords[0])
+				end = int(coords[1])
+
+				if sample.name == case_id:
+					case_junctions.append((start, end))
+				else:
+					control_junctions.append((start, end))
 
 		for junction in control_junctions:
 			if junction in case_junctions:
 				case_junctions.remove(junction)
 
 		# Which reside on exon boundaries next to each other
-		exons = self.get_exons()
-		novel_assembly = exons[exons["gene_ref"] == "None"]
+		exons = self.assembly.table[self.assembly.table["feature"] == "exon"]
+		novel_assembly = exons[exons["gene_name"] == "None"]
 		novel_exons = []
+		skipped_exons = []
 
 		for index, exon in novel_assembly.iterrows():
-			if self.strand == "+":
-				novel_exons.append((self.st.st_map[exon["start"]] - 1, self.st.st_map[exon["end"]] - 1))
-			else:
-				novel_exons.append((self.st.st_map[exon["end"]] - 1, self.st.st_map[exon["start"]] - 1))
+			novel_exons.append((self.st.st_map[exon["end"]] - 1, self.st.st_map[exon["start"]] - 1))
 
 		for junction in case_junctions:
 			for exon in novel_exons:
 				if junction == exon:
-					self.novel_events["se"].append((exon[0], exon[1]))
+					skipped_exons.append(pd.Interval(exon[0], exon[1]))
+
+		return skipped_exons
 
 	def is_extended_exon(self, novel, reference):
-
 
 		fixed_downstream = reference[reference["end"] == novel[0]]
 		fixed_upstream = reference[reference["start"] == novel[1]]
@@ -169,7 +176,7 @@ class Assembly():
 		ee_downstream = fixed_downstream[fixed_downstream["end"] >= novel[1]]
 		ee_upstream = fixed_upstream[novel[0] <= fixed_upstream["end"]]
 
-		if (fixed_downstream.shape[0] > 0 or fixed_upstream.shape[0] > 0):
+		if (ee_downstream.shape[0] > 0 or ee_upstream.shape[0] > 0):
 			start, end = self._strand_correct(self.st.st_map[novel[0]], self.st.st_map[novel[1]])
 			return pd.Interval(start, end)
 
@@ -189,8 +196,13 @@ class Assembly():
 		gaps = self.find_gaps(reference)
 
 		for gap in gaps:
-			if (gap[0] == novel[0]) & (gap[1] == novel[1]):
-				start, end = self._strand_correct(self.st.st_map[gap[0]], self.st.st_map[gap[1]])
+
+			''' Either the gap is contained within the '''
+			start, end = self._strand_correct(novel[0], novel[1])
+			n_start, n_end = self._strand_correct(gap[0], gap[1])
+
+			if (start <= n_start) & (end >= n_end):
+				start, end = self._strand_correct(self.st.st_map[n_start], self.st.st_map[n_end])
 				return pd.Interval(start, end)
 
 		return False
@@ -255,9 +267,12 @@ class GTFE(GTF):
 		if self.assembly:
 			columns.append("coverage")
 
+
 		gtf.columns = columns
 		if self.filter_gene:
+			m_tag = gtf.loc[gtf["gene_name"] == self.gene, "string_ref"].values[0]
 			gtf = gtf[(gtf["gene_name"] == "None") | (gtf["gene_name"] == self.gene)]
+			gtf = gtf[gtf["string_ref"] == m_tag]
 
 		if self.assembly:
 			gtf = gtf.drop("coverage", axis=1)

@@ -37,17 +37,20 @@ class Junctions():
 	def __init__(self, sample):
 		self.sample = sample
 
-	def generate(self, region, mapq=255):
+	def generate(self, region, mapq=255, sam=False):
 
 		multi = {}
 		unique = {}
+
+		if not sam:
+			sam = self.sample.sam
 
 		chrom = region["chr"] if isinstance(region["chr"], list) else [region["chr"]]
 		for i in range(0, len(chrom)):
 			offset = region["offset"][i]
 
 			""" Taken from Alex Dobin's excellent STAR aligner SJ script - reimplemented in Python."""
-			for read in self.sample.sam.fetch(str(chrom[i]), start=region["start"], end=region["end"]):
+			for read in sam.fetch(str(chrom[i]), start=region["start"], end=region["end"]):
 				cigar = read.cigartuples
 				t = 1
 				g = read.reference_start + 1 + offset # as 0 based - SAM format is 1 based.
@@ -87,8 +90,8 @@ class Junctions():
 
 		return sj
 
-	def get(self, region, min_support):
-		self.generate(region)
+	def get(self, region, min_support, sam=False):
+		self.generate(region, sam=sam)
 		sj_filtered = self.filter(min_support)
 
 		return sj_filtered

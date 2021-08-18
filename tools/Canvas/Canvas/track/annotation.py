@@ -294,6 +294,7 @@ class Gene:
 			transcript_name = transcript_annotation["reference_id"]
 			transcript_start = transcript_annotation["start"]
 			transcript_end = transcript_annotation["end"]
+
 			'''Break down transcripts into regions'''
 			transcript_annotation = annotation[annotation["transcript_id"] == transcript_id]
 			exons = transcript_annotation[transcript_annotation["feature"] == "exon"]

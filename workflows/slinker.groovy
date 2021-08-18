@@ -209,9 +209,9 @@ assemble_transcripts = {
 	transform('.gene.bam') to('.assembly.gtf')  {
 		output.dir=temp_assembly
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output.assembly.gtf -t -c 100 -f 0.3 -v""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output.assembly.gtf -t -c 10 -f 0.2 -v""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output.assembly.gtf -t -c 100 -f 0.3 -v""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output.assembly.gtf -t -c 1 -f 0.05 -v""", "stringtie"
 		}
 		
 	}
@@ -224,7 +224,11 @@ merge_original = {
 		from("**.assembly.gtf") {
 			output.dir=resources_folder
 			def gtf = resources_folder+"/"+gene+".gtf"
-			exec """$STRINGTIE --merge -G $gtf -p $threads -c 100 -f 0.2 $inputs > $output.dir/assembly.combined.gtf"""
+			if(conservative == "true"){
+				exec """$STRINGTIE --merge -G $gtf -p $threads -c 10 -f 0.2 $inputs > $output.dir/assembly.combined.gtf"""
+			} else {
+				exec """$STRINGTIE --merge -G $gtf -p $threads -c 1 -f 0.05 $inputs > $output.dir/assembly.combined.gtf"""
+			}
 		}
 	}
 

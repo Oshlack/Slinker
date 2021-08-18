@@ -11,7 +11,7 @@ Imports
 ---------------------------------------------------------------------------------------------------------------------'''
 
 ''' Internal '''
-
+import Canvas as cv
 
 ''' External '''
 import pandas as pd
@@ -43,6 +43,7 @@ class Sample():
 		self._get_idxstats()
 		self.lib_size = self.bam_stats["mapped"].sum() + self.bam_stats["unmapped"].sum()
 		self.sam = py.AlignmentFile(bam_path, "rb")
+		self.junctions = self._get_junctions()
 
 	def _get_idxstats(self):
 		colnames = ["chrom", "length", "mapped", "unmapped"]
@@ -55,6 +56,9 @@ class Sample():
 		self.bam_stats = pd.DataFrame.from_records(chroms, columns=colnames)
 		for col in colnames[1:]:
 			self.bam_stats[col] = pd.to_numeric(self.bam_stats[col])
+
+	def _get_junctions(self):
+		return cv.Junctions(sample=self.sam)
 
 
 

@@ -118,10 +118,7 @@ class ST():
 
 	def get_st_region(self, assembly):
 
-		assemblies = self.st_gtf.table[self.st_gtf.table["feature"] == "gene"]
-		offset = []
-		for gene in assembly.assembly_name:
-			offset += [assemblies.loc[assemblies["string_ref"] == gene, "start"].values[0]]
+		offset = [1] if self.gene.strand == "+" else [-1]
 
 		return {"chr": assembly.assembly_name,
 				"start": self.supertranscript.index[0],
