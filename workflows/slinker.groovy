@@ -213,11 +213,11 @@ qsort_bam = {
 assemble_transcripts = {
 	transform('.gene.bam') to('.assembly.gtf')  {
 		output.dir=temp_assembly
-		def name = branch.name
+		def output_file = branch.name + ".assembly.gtf"
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $name.assembly.gtf -c $c -f 0.1""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $name.assembly.gtf -c $c -f 0.01""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01""", "stringtie"
 		}
 		
 	}
@@ -226,11 +226,11 @@ assemble_transcripts = {
 assemble_transcripts_pure = {
 	transform('.gene.bam') to('.assembly.gtf')  {
 		output.dir=temp_assembly
-		def name = branch.name
+		def output_file = branch.name + ".assembly.gtf"
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $name.assembly.gtf -c $c -f 0.1 -e""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1 -e""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $name.assembly.gtf -c $c -f 0.01 -e""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file-c $c -f 0.01 -e""", "stringtie"
 		}
 		
 	}
