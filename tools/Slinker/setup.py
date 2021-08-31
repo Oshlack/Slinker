@@ -4,7 +4,7 @@ modules = ["Slinker." + p for p in sorted(find_packages("./Slinker"))]
 
 setup(
     name="Slinker",
-    version="0.1",
+    version="0.1b",
     description="Novel Splice Junction Visualisation",
     url="https://github.com/oshlack/slinker",
     author="Breon Schmidt",
