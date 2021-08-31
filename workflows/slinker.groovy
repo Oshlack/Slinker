@@ -211,9 +211,11 @@ qsort_bam = {
 // ### Genome guided assembly of transcripts
 
 assemble_transcripts = {
-	transform('.gene.bam') to('.assembly.gtf')  {
-		output.dir=temp_assembly
-		def output_file = temp_assembly + "/" + branch.name + ".assembly.gtf"
+
+	output.dir=temp_assembly
+	def output_file = temp_assembly + "/" + branch.name + ".assembly.gtf"
+
+	transform('.gene.bam') to(output_file)  {
 		if(conservative == "true"){
 			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1""", "stringtie"
 		} else {
@@ -224,9 +226,11 @@ assemble_transcripts = {
 }
 
 assemble_transcripts_pure = {
-	transform('.gene.bam') to('.assembly.gtf')  {
-		output.dir=temp_assembly
-		def output_file = temp_assembly + "/" + branch.name + ".assembly.gtf"
+
+	output.dir=temp_assembly
+	def output_file = temp_assembly + "/" + branch.name + ".assembly.gtf"
+
+	transform('.gene.bam') to(output_file) {
 		if(conservative == "true"){
 			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1 -e""", "stringtie"
 		} else {
