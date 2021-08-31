@@ -118,7 +118,7 @@ class ST():
 
 	def get_st_region(self, assembly):
 
-		offset = [1] if self.gene.strand == "+" else [-1]
+		offset = [1] if self.gene.strand == "+" else [0]
 
 		return {"chr": assembly.assembly_name,
 				"start": self.supertranscript.index[0],
@@ -201,8 +201,9 @@ class GTF_ST():
 
 		if self.block:
 
-			exons = final_table[final_table["feature"] == "exon"]
+			print(final_table)
 
+			exons = final_table[final_table["feature"] == "exon"]
 			starts = exons["start"].sort_values().drop_duplicates()
 			ends = exons["end"].sort_values().drop_duplicates()
 
@@ -225,7 +226,7 @@ class GTF_ST():
 					if starts.shape[0] == 0:
 						next_end = ends.iloc[0]
 					else:
-						if next_start < ends.iloc[0]:
+						if starts.iloc[0] < ends.iloc[0]:
 							next_end = starts.iloc[0]
 						else:
 							next_end = ends.iloc[0]

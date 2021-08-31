@@ -54,6 +54,7 @@ class Slinker():
 		skipped_exons = self.assembly.skipped_exon(self.samples, self.assembly.st.st_region, self.case_id, min_support=10)
 		self.assembly.novel_regions["se"]["pos"] = skipped_exons
 
+
 	def _get_colors(self):
 
 		color_event = {

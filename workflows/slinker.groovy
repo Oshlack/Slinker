@@ -88,32 +88,37 @@ if(binding.variables.containsKey("genome")){
 }
 
 
+if(!binding.variables.containsKey("tpm")){
+	tpm=1000
+}
+
 if(!binding.variables.containsKey("threads")){
 	threads=1
 }
 
 if(!binding.variables.containsKey("conservative")){
 	conservative=false
-}
 
-if(!binding.variables.containsKey("g_mem")){
-	threads=4000000000 // 4GB
-}
+	if(!binding.variables.containsKey("c")){
+		c = 1
+	} 
 
-if(!binding.variables.containsKey("a_mem")){
-	threads=4000000000 // 4GB
+} else {
+	if(!binding.variables.containsKey("c")){
+		c = 10
+	} 
 }
 
 if(!binding.variables.containsKey("width")){
-	width=25 // 4GB
+	width=1000 
 }
 
-if(!binding.variables.containsKey("height")){
-	height=18 // 4GB
+if(!binding.variables.containsKey("log_cov")){
+	log_cov="False" 
 }
 
-if(!binding.variables.containsKey("min_support")){
-	min_support=10 // 4GB
+if(!binding.variables.containsKey("min_junctions")){
+	min_junctions=10 
 }
 
 if(!binding.variables.containsKey("format")){
@@ -189,7 +194,7 @@ extract_reads = {
 	def bed_file = output.dir+"/"+gene+".region.bed"
 
 	transform(".bam") to (".gene.bam"){
-		exec """$SAMTOOLS view -@ $threads -Sb -h -L $bed_file $input.bam > $output.gene.bam""", "samtools"
+		exec """$SAMTOOLS view -@ $threads -bq 1 -Sb -h -L $bed_file $input.bam > $output.gene.bam""", "samtools"
 	}
 
 }
@@ -208,32 +213,39 @@ qsort_bam = {
 assemble_transcripts = {
 	transform('.gene.bam') to('.assembly.gtf')  {
 		output.dir=temp_assembly
+		def name = branch.name
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output.assembly.gtf -t -c 10 -f 0.2 -v""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $name.assembly.gtf -c $c -f 0.1""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output.assembly.gtf -t -c 1 -f 0.05 -v""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $name.assembly.gtf -c $c -f 0.01""", "stringtie"
 		}
 		
 	}
 }
 
+assemble_transcripts_pure = {
+	transform('.gene.bam') to('.assembly.gtf')  {
+		output.dir=temp_assembly
+		def name = branch.name
+		if(conservative == "true"){
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $name.assembly.gtf -c $c -f 0.1 -e""", "stringtie"
+		} else {
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $name.assembly.gtf -c $c -f 0.01 -e""", "stringtie"
+		}
+		
+	}
+}
 
 merge_original = {
 
-	produce(final_resources + '/assembly.combined.gtf'){
-		from("**.assembly.gtf") {
+	produce(resources_folder + '/assembly.combined.gtf'){
 			output.dir=resources_folder
 			def gtf = resources_folder+"/"+gene+".gtf"
-			if(conservative == "true"){
-				exec """$STRINGTIE --merge -G $gtf -p $threads -c 10 -f 0.2 $inputs > $output.dir/assembly.combined.gtf"""
-			} else {
-				exec """$STRINGTIE --merge -G $gtf -p $threads -c 1 -f 0.05 $inputs > $output.dir/assembly.combined.gtf"""
-			}
-		}
+			exec """$STRINGTIE --merge -G $gtf -p $threads -T $tpm -c $c -i $temp_assembly/*.assembly.gtf > $output.dir/assembly.combined.gtf"""
 	}
 
 }
-
+	
 
 // ### Create new superTranscript 
 
@@ -328,7 +340,7 @@ star_index = {
 visualise = {
 
 	output.dir = plots_folder
-	exec """python $VIS $gene $case_sample $resources_folder $output.dir"""
+	exec """python $VIS $gene $case_sample $resources_folder $output.dir $width $min_junctions $log_cov"""
 
 }
 
@@ -338,8 +350,7 @@ visualise = {
 
 run { 
 	[ cases: cases ]*[make_dir + get_gene_region] +
-	format*[extract_reads + qsort_bam + get_fastq + assemble_transcripts] +
+	[[ cases: cases ]*[format*[extract_reads + qsort_bam + get_fastq + assemble_transcripts]], [ controls: controls ]*[format*[extract_reads + qsort_bam + get_fastq + assemble_transcripts_pure]]] +
 	merge_original + flatten_gtf + create_st + star_genome + 
-	format*[extract_reads + qsort_bam + get_fastq + star_align + star_index] +
-	[visualise]
+	format*[extract_reads + qsort_bam + get_fastq + star_align + star_index] + [visualise]
 }
