@@ -9,6 +9,7 @@
 ''' --------------------------------------------------------------------------------------------------------------------
 Imports
 ---------------------------------------------------------------------------------------------------------------------'''
+from typing import List, Any, Tuple
 
 ''' Internal '''
 from Slinker.build.supertranscript import ST
@@ -51,14 +52,14 @@ class Assembly():
 		for i, e in assembly.iterrows():
 
 			if first:
-				start = e[4]
+				start = e["end"]
 				first = False
 				#gaps.append((start - padding, start))
 				continue
 
-			if abs(self.st.st_map[start] - self.st.st_map[e[3]]) > 1:
-				gaps.append((start, e[3]))
-			start = e[4]
+			if abs(self.st.st_map[start] - self.st.st_map[e["start"]]) > 1:
+				gaps.append((start, e["start"]))
+			start = e["end"]
 
 		#gaps.append((start, start + padding))
 
@@ -69,39 +70,46 @@ class Assembly():
 		# Novel, truncated, intron, extended, AS
 		novel_exons, ref_exons = self.assembly.get_exons(split=True)
 
+		ref_exons_merge = ref_exons.sort_values("start")
+		ref_exons_merge["group"] = (ref_exons_merge["start"] > ref_exons_merge["end"].shift().cummax()).cumsum()
+		ref_exons_merge = ref_exons_merge.groupby("group").agg({"start": "min", "end": "max"})
+
 		# At this point we only care about differences between the reference and the build
 		novel_intervals = []
-		ref_intervals = []
+		ref_intervals: List[Tuple[Any, Any]] = []
 
 		for i, e in novel_exons.iterrows():
 			novel_intervals.append((e["start"], e["end"]))
 
 		''' Account for strandedness in ref '''
 		for i, e in ref_exons.iterrows():
-			if self.gene.strand == "+":
-				ref_intervals.append((e[3], e[4]))
-			else:
-				ref_intervals.append((e[3], e[4]))
+			ref_intervals.append((e["start"], e["end"]))
 
 		novel_differences = set(novel_intervals).difference(set(ref_intervals))
 
-		# We now have all the novel things, we need to determine what they might be
+		''' Let's consider deletion events before we think about specifics'''
+		deletions = self.has_deletion(novel_exons, ref_exons)
+
+		''' We now have all the novel things, we need to determine what they might be '''
 		novel_results = {}
 		for novelty in ["ne", "ee", "ri", "te", "se"]:
 			novel_results[novelty] = {"pos": [], "c": self.colors[novelty]}
 
 		for novel in novel_differences:
 
+			if self.is_deletion(novel, deletions):
+				continue
+
 			novel_adj = (novel[1], novel[0]) if self.st.st_map[novel[1]] < self.st.st_map[novel[0]] else novel
 
-			if self.is_novel_exon(novel_adj, ref_exons):
-				novel_results["ne"]["pos"].append(self.is_novel_exon(novel_adj, ref_exons))
-			elif self.is_retained_intron(novel_adj, ref_exons):
-				novel_results["ri"]["pos"].append(self.is_retained_intron(novel_adj, ref_exons))
-			elif self.is_extended_exon(novel_adj, ref_exons):
-				novel_results["ee"]["pos"].append(self.is_extended_exon(novel_adj, ref_exons))
-			elif self.is_truncated_exon(novel_adj, ref_exons):
-				novel_results["te"]["pos"].append(self.is_truncated_exon(novel_adj, ref_exons))
+			if self.is_novel_exon(novel_adj, ref_exons_merge):
+				novel_results["ne"]["pos"].append(self.is_novel_exon(novel_adj, ref_exons_merge))
+			elif self.is_retained_intron(novel_adj, ref_exons_merge):
+				novel_results["ri"]["pos"].append(self.is_retained_intron(novel_adj, ref_exons_merge))
+			elif self.is_extended_exon(novel_adj, ref_exons_merge):
+				novel_results["ee"]["pos"].append(self.is_extended_exon(novel_adj, ref_exons_merge))
+			elif self.is_truncated_exon(novel_adj, ref_exons_merge):
+				novel_results["te"]["pos"].append(self.is_truncated_exon(novel_adj, ref_exons_merge))
 			else:
 				continue
 
@@ -124,7 +132,6 @@ class Assembly():
 			start, end = self._strand_correct(self.st.st_map[novel[0]],  self.st.st_map[novel[1]])
 
 			if (n_start > gap[0]) & (n_end < gap[1]):
-
 				return pd.Interval(start, end)
 
 		return False
@@ -180,7 +187,7 @@ class Assembly():
 			start, end = self._strand_correct(self.st.st_map[novel[0]], self.st.st_map[novel[1]])
 			return pd.Interval(start, end)
 
-	def is_truncated_exon(self, novel, reference):
+	def is_truncated_exon(self, novel, reference, distance=100):
 
 		fixed_downstream = reference[reference["end"] == novel[1]]
 		fixed_upstream = reference[reference["start"] == novel[0]]
@@ -190,6 +197,36 @@ class Assembly():
 		if (trunc_downstream.shape[0] > 0 or trunc_upstream.shape[0] > 0):
 			start, end = self._strand_correct(self.st.st_map[novel[0]], self.st.st_map[novel[1]])
 			return pd.Interval(start, end)
+
+	def is_deletion(self, novel, deletions):
+
+		for deletion in deletions:
+			if novel[0] == deletion[0] or novel[0] == deletion[1]:
+				return True
+			elif novel[1] == deletion[0] or novel[1] == deletion[1]:
+				return True
+
+		return False
+
+	def has_deletion(self, n_reference, reference):
+
+
+		gaps = self.find_gaps(n_reference)
+		no_transcripts = reference["transcript_id"].unique().shape[0]
+		deletions = []
+
+		'''For a deletion event to be a deletion event, these "gaps" cannot be in any reference transcripts.'''
+
+		for gap in gaps:
+
+			''' Either the gap is contained within the '''
+			n_start, n_end = self._strand_correct(gap[0], gap[1])
+			potential_del = reference[(reference["start"] < n_start) & (n_end < reference["end"])]
+
+			if potential_del["transcript_id"].unique().shape[0] == no_transcripts:
+				deletions.append((n_start, n_end))
+
+		return deletions
 
 	def is_retained_intron(self, novel, reference):
 
@@ -283,7 +320,6 @@ class GTFE(GTF):
 	def get_gene_ref(self):
 		assembly_name = list(self.table["string_ref"].unique())
 		return assembly_name
-
 
 	def get_exons(self, split=False):
 

@@ -193,7 +193,6 @@ class GTF_ST():
 			final_table = table
 
 		''' Now finally, sort the exons by start position '''
-
 		if not self.block:
 			final_table = pd.DataFrame(final_table.groupby("transcript_id").apply(lambda x: x.sort_values("start")))
 		else:
@@ -201,47 +200,19 @@ class GTF_ST():
 
 		if self.block:
 
-			print(final_table)
-
 			exons = final_table[final_table["feature"] == "exon"]
-			starts = exons["start"].sort_values().drop_duplicates()
-			ends = exons["end"].sort_values().drop_duplicates()
-
-			table_block = pd.DataFrame(final_table.iloc[:2], columns=final_table.columns)
 			model_exon = pd.DataFrame(exons.iloc[0]).transpose()
 
-			while (starts.shape[0] > 0) or (ends.shape[0] > 0):
+			exons_merge = exons.sort_values("start")
+			exons_merge["group"] = (exons_merge["start"] > exons_merge["end"].shift().cummax()).cumsum()
+			exons_merge = exons_merge.groupby("group").agg({"start": "min", "end": "max"})
 
+			table_block = pd.DataFrame(final_table.iloc[:2], columns=final_table.columns)
+
+			for i, exon in exons_merge.iterrows():
 				new_block = model_exon.copy()
-
-				if starts.shape[0] > 0:
-
-					next_start = starts.iloc[0]
-
-					"""first perform a check to see whether any ends are more than the start"""
-					ends = ends[ends > next_start]
-					starts = starts.iloc[1:]
-
-					""" Is the next closest boundary a start or an end? """
-					if starts.shape[0] == 0:
-						next_end = ends.iloc[0]
-					else:
-						if starts.iloc[0] < ends.iloc[0]:
-							next_end = starts.iloc[0]
-						else:
-							next_end = ends.iloc[0]
-
-				else:
-
-					next_start = next_end + 1
-					ends = ends[ends > next_start]
-					if ends.shape[0] == 0:
-						break
-					next_end = ends.iloc[0]
-
-				'''Add to the growing table'''
-				new_block["start"] = next_start
-				new_block["end"] = next_end
+				new_block["start"] = exon["start"]
+				new_block["end"] = exon["end"]
 				table_block = pd.concat([table_block, new_block], join="inner")
 				table_block["reference_id"] = table_block["gene_name"][0] + " block"
 
