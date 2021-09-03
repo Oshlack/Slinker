@@ -158,7 +158,7 @@ class Assembly():
 		for junction in control_junctions:
 			if junction in case_junctions:
 				case_junctions.remove(junction)
-`
+
 		''' Now a skipped exon must be... at known exon boundaries! Let's have a look.'''
 
 		exons = self.assembly.table[self.assembly.table["feature"] == "exon"]
