@@ -34,7 +34,7 @@ build path
 
 class Slinker():
 
-	def __init__(self, gene=False, case_id=False, resources="resources", padding=10):
+	def __init__(self, gene=False, case_id=False, resources="resources", padding=10, min_junctions=10):
 
 		self.gene = gene
 		self.case_id = case_id
@@ -51,7 +51,8 @@ class Slinker():
 		'''Assembly'''
 		self.color_event = self._get_colors()
 		self.assembly = build.Assembly(gene, resources, colors=self.color_event)
-		skipped_exons = self.assembly.skipped_exon(self.samples, self.assembly.st.st_region, self.case_id, min_support=10)
+		skipped_exons = self.assembly.skipped_exon(self.samples, self.assembly.st.st_region,
+												   self.case_id, min_support=min_junctions)
 		self.assembly.novel_regions["se"]["pos"] = skipped_exons
 
 
