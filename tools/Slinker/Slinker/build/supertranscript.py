@@ -61,7 +61,7 @@ class ST():
 		# 1 = In exon
 		# 2 = Exon boundaries
 
-		# Make a flat representation that represents the entire region
+		# Make a flat reprmRNA_end_NFxesentation that represents the entire region
 		exon_region = []
 
 		all_exons = pd.concat([self.exons, self.exons_ref], join="inner")
@@ -118,7 +118,7 @@ class ST():
 
 	def get_st_region(self, assembly):
 
-		offset = [1] if self.gene.strand == "+" else [0]
+		offset = [0] if self.gene.strand == "+" else [1]
 
 		return {"chr": assembly.assembly_name,
 				"start": self.supertranscript.index[0],

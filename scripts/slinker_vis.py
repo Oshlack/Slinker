@@ -36,7 +36,7 @@ else:
 case_id = case_id.split("_Aligned.sortedByCoord.out.bam")[0].split("/")[-1]
 
 # Slinkerfy
-slinker = sl.Slinker(gene=gene, case_id=case_id, resources=resources, padding=100)
+slinker = sl.Slinker(gene=gene, case_id=case_id, resources=resources, padding=100, min_junctions=junctions)
 
 # Plot
 slinker.plot(log=log, cpm=False, min_junctions=junctions, width=width,

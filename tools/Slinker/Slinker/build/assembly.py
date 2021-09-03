@@ -158,20 +158,25 @@ class Assembly():
 		for junction in control_junctions:
 			if junction in case_junctions:
 				case_junctions.remove(junction)
+`
+		''' Now a skipped exon must be... at known exon boundaries! Let's have a look.'''
 
-		# Which reside on exon boundaries next to each other
 		exons = self.assembly.table[self.assembly.table["feature"] == "exon"]
-		novel_assembly = exons[exons["gene_name"] == "None"]
-		novel_exons = []
+		ref_assembly = exons[exons["gene_name"] != "None"]
+
+		boundaries = {}
+		for i, values in ref_assembly.iterrows():
+			boundaries[self.st.st_map[values["start"]]] = True
+			boundaries[self.st.st_map[values["end"]]] = True
+
 		skipped_exons = []
-
-		for index, exon in novel_assembly.iterrows():
-			novel_exons.append((self.st.st_map[exon["end"]] - 1, self.st.st_map[exon["start"]] - 1))
-
 		for junction in case_junctions:
-			for exon in novel_exons:
-				if junction == exon:
-					skipped_exons.append(pd.Interval(exon[0], exon[1]))
+			try:
+				if boundaries[junction[0]] and boundaries[junction[1]]:
+					skipped_exons.append(pd.Interval(junction[0], junction[1]))
+
+			except KeyError:
+				continue
 
 		return skipped_exons
 
