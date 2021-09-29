@@ -344,7 +344,7 @@ star_index = {
 visualise = {
 
 	output.dir = plots_folder
-	exec """python $VIS $gene $case_sample $resources_folder $output.dir $width $min_junctions $log_cov"""
+	exec """python $VIS $gene $case_sample $format $resources_folder $output.dir $width $min_junctions $log_cov"""
 
 }
 

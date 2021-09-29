@@ -166,8 +166,9 @@ class Assembly():
 
 		boundaries = {}
 		for i, values in ref_assembly.iterrows():
-			boundaries[self.st.st_map[values["start"]]] = True
-			boundaries[self.st.st_map[values["end"]]] = True
+			for offset in range(-3, 3): # There's always some close gremlins here.
+				boundaries[self.st.st_map[values["start"]] + offset] = True
+				boundaries[self.st.st_map[values["end"]] + offset] = True
 
 		skipped_exons = []
 		for junction in case_junctions:
