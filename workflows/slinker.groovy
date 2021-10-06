@@ -217,9 +217,9 @@ assemble_transcripts = {
 
 	transform('.gene.bam') to(output_file)  {
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -t -c $c -f 0.1""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -t -c $c -f 0.01""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01""", "stringtie"
 		}
 		
 	}
@@ -232,9 +232,9 @@ assemble_transcripts_pure = {
 
 	transform('.gene.bam') to(output_file) {
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -t -c $c -f 0.1 -e""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1 -e""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -t -c $c -f 0.01 -e""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01 -e""", "stringtie"
 		}
 		
 	}
