@@ -32,7 +32,7 @@ core = System.getenv("SLINKERDIR")
 
 // Internal tools
 load core+"/workflows/tools.groovy"
-FLATTEN = core+"/scripts/generate_flattened_gtf.R"
+FLATTEN = core+"/tools/Slinker/Slinker/build/flatten.py"
 VIS = core+"/scripts/slinker_vis.py"
 
 /*-----------------------------------------------------------
@@ -217,9 +217,9 @@ assemble_transcripts = {
 
 	transform('.gene.bam') to(output_file)  {
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -t -c $c -f 0.1""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -t -c $c -f 0.01""", "stringtie"
 		}
 		
 	}
@@ -232,9 +232,9 @@ assemble_transcripts_pure = {
 
 	transform('.gene.bam') to(output_file) {
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1 -e""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -t -c $c -f 0.1 -e""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01 -e""", "stringtie"
+			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -t -c $c -f 0.01 -e""", "stringtie"
 		}
 		
 	}
@@ -258,9 +258,8 @@ flatten_gtf = {
 	from("assembly.combined.gtf") produce (resources_folder + "/flattened.gtf"){
 		output.dir=resources_folder
 		def out_file = resources_folder + "/flattened.gtf"
-		exec """R CMD BATCH --no-restore --no-save 
-				"--args input_gtf='$input' output_gtf='$out_file'"
-				$FLATTEN $output.dir/generate_flattened_genome_annotation.log;""", "supertranscript"
+		exec """python $FLATTEN -g $input -o $out_file"""
+
 	}
 
 }

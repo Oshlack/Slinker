@@ -10,13 +10,13 @@
 Imports
 ---------------------------------------------------------------------------------------------------------------------'''
 
+'''Internal'''
+
+from Slinker.build.flatten import flatten_exons
+
 '''External'''
 import numpy as np
 import pandas as pd
-
-import time
-from sys import getsizeof
-
 
 ''' --------------------------------------------------------------------------------------------------------------------
 Classes
@@ -49,9 +49,10 @@ class ST():
 	def make_supertranscript(self):
 		flat_ref = self._flat_reference()
 		if self.gene.strand == "+":
-			st_map = pd.Series(range(0, flat_ref.shape[0]), index=flat_ref.index, name="st_coord")
+			st_map = pd.Series(range(1, flat_ref.shape[0] + 1), index=flat_ref.index, name="st_coord")
 		else:
-			st_map = pd.Series(range(flat_ref.shape[0] - 1, -1, -1), index=flat_ref.index, name="st_coord")
+			st_map = pd.Series(range(flat_ref.shape[0], 0, -1), index=flat_ref.index, name="st_coord")
+
 		st = self._flat_to_st(flat_ref)
 
 		return st, st_map
@@ -61,7 +62,7 @@ class ST():
 		# 1 = In exon
 		# 2 = Exon boundaries
 
-		# Make a flat reprmRNA_end_NFxesentation that represents the entire region
+		# Make a flat representation that represents the entire region
 		exon_region = []
 
 		all_exons = pd.concat([self.exons, self.exons_ref], join="inner")
@@ -102,7 +103,7 @@ class ST():
 	def _flat_to_st(self, flat):
 
 		st = flat.copy()
-		st.index = range(0, flat.shape[0])
+		st.index = range(1, flat.shape[0] + 1)
 		prev = 0
 		drop = []
 		for pos, value in st.iteritems():
@@ -118,11 +119,11 @@ class ST():
 
 	def get_st_region(self, assembly):
 
-		offset = [0] if self.gene.strand == "+" else [1]
+		offset = [1] # We are saying that these coordinates are 1-based (important for Pysam).
 
 		return {"chr": assembly.assembly_name,
 				"start": self.supertranscript.index[0],
-				"end": self.supertranscript.index[-1],
+				"end": self.supertranscript.index[-1] + 1,
 				"offset": offset}
 
 class GTF_ST():
@@ -194,6 +195,8 @@ class GTF_ST():
 
 		''' Now finally, sort the exons by start position '''
 		if not self.block:
+
+			exons = final_table[final_table["feature"] == "exon"]
 			final_table = pd.DataFrame(final_table.groupby("transcript_id").apply(lambda x: x.sort_values("start")))
 		else:
 			final_table.reset_index(inplace=True)
@@ -201,18 +204,15 @@ class GTF_ST():
 		if self.block:
 
 			exons = final_table[final_table["feature"] == "exon"]
+			exons_flat = flatten_exons(exons)
+
 			model_exon = pd.DataFrame(exons.iloc[0]).transpose()
-
-			exons_merge = exons.sort_values("start")
-			exons_merge["group"] = (exons_merge["start"] > exons_merge["end"].shift().cummax()).cumsum()
-			exons_merge = exons_merge.groupby("group").agg({"start": "min", "end": "max"})
-
 			table_block = pd.DataFrame(final_table.iloc[:2], columns=final_table.columns)
 
-			for i, exon in exons_merge.iterrows():
+			for i, exon in exons_flat.iterrows():
 				new_block = model_exon.copy()
-				new_block["start"] = exon["start"]
-				new_block["end"] = exon["end"]
+				new_block["start"] = int(exon["start"])
+				new_block["end"] = int(exon["end"])
 				table_block = pd.concat([table_block, new_block], join="inner")
 				table_block["reference_id"] = table_block["gene_name"][0] + " block"
 

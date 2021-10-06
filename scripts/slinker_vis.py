@@ -38,7 +38,8 @@ else:
 fmt_left = fmt.split("%")[0].split("*")[-1] # There should only be one %
 fmt_right = fmt.split("%")[1].split("*")[-1]
 
-case_id = case_bam.split(fmt_left)[1].split(fmt_right)[0]
+case_id = case_bam.split(fmt_left)[-1].split(fmt_right)[0]
+
 
 # Slinkerfy
 slinker = sl.Slinker(gene=gene, case_id=case_id, resources=resources, padding=100, min_junctions=junctions)

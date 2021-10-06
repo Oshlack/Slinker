@@ -13,3 +13,4 @@ Imports
 # Organising Data
 from Slinker.build.assembly import Assembly
 from Slinker.build.supertranscript import ST
+from Slinker.build.flatten import flatten_exons
