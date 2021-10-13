@@ -305,7 +305,7 @@ class Gene:
 			cds_list = list(zip(cds["start"], cds["end"]))
 			utr_list = list(zip(utr["start"], utr["end"]))
 
-			self.transcripts[transcript_id] = Transcript(transcript_name, transcript_start, transcript_end,
+			self.transcripts[transcript_id] = Transcript(transcript_id, transcript_start, transcript_end,
 														 self.strand, exons=exon_list,  cds=cds_list,
 														 utr=utr_list)
 

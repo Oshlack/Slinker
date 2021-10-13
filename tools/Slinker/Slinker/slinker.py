@@ -89,9 +89,10 @@ class Slinker():
 		'''Progressively build a Slinker layout using the CANVAS paradigm.
 		   Note, dictionary id must reflect row no. Nested will overlap.'''
 
+		self.assembly.gene.add_transcripts(self.assembly.assembly.table)
+		no_transcripts = self.assembly.gene.count_transcripts(self.assembly.gene.region)
+
 		if not height:
-			self.assembly.gene.add_transcripts(self.assembly.assembly.table)
-			no_transcripts = self.assembly.gene.count_transcripts(self.assembly.gene.region)
 			height = 400 + no_transcripts*100 + len(self.controls)*300
 
 		hover_template = '<b>Coverage</b>: %{y}'+'<br><b>ST Coord</b>: %{x}<br>'+ \
@@ -130,6 +131,7 @@ class Slinker():
 					 'title': "Block",
 					 'size': 100 + 50}
 
+		padding = 25 if no_transcripts == 1 else 0
 
 		'''A decision has to be made here, is it big? Or not so big?'''
 		layout[5] = {'type': 'gene',
@@ -139,7 +141,7 @@ class Slinker():
 					 'colors': self.assembly.novel_regions,
 					 'gtf': self.assembly.st.st_gtf,
 					 'title': "superTranscripts",
-					 'size': no_transcripts*100 + 50}
+					 'size': no_transcripts*100 + 50 + padding}
 
 		c = 6
 

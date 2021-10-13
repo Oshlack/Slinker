@@ -46,6 +46,7 @@ class Plot():
 
 		# Define properties of the visualisation
 		self.region = region
+		self.cov_range = []
 
 		# Create the visualisation
 		self._create()
@@ -103,6 +104,7 @@ class Plot():
 									 log=track["log"], cpm=track["cpm"],
 									 coord_map=track["coord_map"], hover_template=track["hover_template"], row=track_no,
 									 line=track["line"], fill=track["fill"])
+				self.cov_range.append(track_coverage.cov_range)
 
 			elif track["type"] == "gene":
 				form = track["form"] if track["form"] else None
@@ -158,14 +160,7 @@ class Plot():
 
 	def _scale_ylim(self):
 
-		max_y = 0
-		for i in range(0, len(self.track_types)):
-			if self.track_types[i] == "coverage":
-				j = i + 1
-				case_max = self.canvas['layout']['yaxis' + str(j)].range[1]
-				if max_y < case_max:
-					max_y = case_max
-
+		max_y = max(self.cov_range)
 		for i in range(0, len(self.track_types)):
 			if self.track_types[i] == "coverage":
 				j = i + 1

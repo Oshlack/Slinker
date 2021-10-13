@@ -30,8 +30,9 @@ class Coverage():
 
 	"""
 
-	def __init__(self, sample):
+	def __init__(self, sample, cov_range=False):
 		self.sample = sample
+		self.cov_range = cov_range
 
 	def _assign_block(self, block, coverage_array, region, reads, offset):
 
@@ -98,6 +99,8 @@ class Coverage():
 			y = np.log2(y + 1) / self.sample.lib_size * 1000000
 		elif log:
 			y = np.log2(y + 1)
+
+		self.cov_range = max(y)
 
 		if not isinstance(coord_map, bool):
 			alt_x = []
