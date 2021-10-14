@@ -17,9 +17,9 @@ commands="samtools gffread stringtie bpipe star"
 
 #installation methods
 function bpipe_install {
-    wget -O bpipe-0.9.9.5.tar.gz https://github.com/ssadedin/bpipe/releases/download/0.9.9.5/bpipe-0.9.9.5.tar.gz
-    tar -zxvf bpipe-0.9.9.5.tar.gz ; rm bpipe-0.9.9.5.tar.gz
-    ln -s $PWD/bpipe-0.9.9.5/bin/* $PWD/bin/
+    wget -O bpipe-0.9.9.9.tar.gz https://github.com/ssadedin/bpipe/releases/download/0.9.9.9/bpipe-0.9.9.9.tar.gz
+    tar -zxvf bpipe-0.9.9.9.tar.gz ; rm bpipe-0.9.9.9.tar.gz
+    ln -s $PWD/bpipe-0.9.9.9/bin/* $PWD/bin/
 }
 
 function samtools_install {
