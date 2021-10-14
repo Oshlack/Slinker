@@ -1,6 +1,6 @@
 #=======================================================================================================================
 #
-#   CANVAS
+#   SLINKER FLATTEN
 #   Author: Breon Schmidt
 #   License: MIT
 #
@@ -78,13 +78,12 @@ def gtf_to_flat(gtf_path=False, skip_row=0):
 
 	block_no = 1
 	model_exon = pd.DataFrame(exons.iloc[0]).transpose()
+	pd.set_option('display.max_colwidth', 1000)
+
 	for i, exon in exons_flat.iterrows():
 		new_block = model_exon.copy()
-		gene_name = str(new_block["attributes"]).split('gene_id "')[-1].split('"; transcript_id')[0]
-		transcript_id = "block"
-		attributes = 'gene_id "' + gene_name + \
-					 '"; transcript_id "' + transcript_id + \
-					 '"; block_number "' + str(block_no) + '";'
+		gene_name = str(new_block["attributes"].values[0]).split('gene_id "')[1].split('"; transcript_id')[0]
+		attributes = 'gene_id "' + str(gene_name) + '"; transcript_id "' + str(gene_name) + '"; block_number "' + str(block_no) + '";'
 
 		new_block["start"] = int(exon["start"])
 		new_block["end"] = int(exon["end"])
