@@ -1,0 +1,11 @@
+name: slinker
+channels:
+  - anaconda
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - pandas==1.2.3
+  - plotly==4.14.3
+  - pybedtools==0.8.1
+  - pysam==0.15.4

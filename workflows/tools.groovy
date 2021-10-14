@@ -1,4 +1,6 @@
-// tools
-STRINGTIE = System.getenv("stringtie")
-SAMTOOLS = System.getenv("samtools")
-STAR = System.getenv("star")
+// Path to tools used by the Slinker pipeline
+star=""
+samtools=""
+gffread=""
+stringtie=""
+bpipe=""

@@ -194,7 +194,7 @@ extract_reads = {
 	def bed_file = output.dir+"/"+gene+".region.bed"
 
 	transform(".bam") to (".gene.bam"){
-		exec """$SAMTOOLS view -@ $threads -bq 1 -Sb -h -L $bed_file $input.bam > $output.gene.bam""", "samtools"
+		exec """$samtools view -@ $threads -bq 1 -Sb -h -L $bed_file $input.bam > $output.gene.bam""", "samtools"
 	}
 
 }
@@ -204,7 +204,7 @@ extract_reads = {
 qsort_bam = {
 	transform('.gene.bam') to('.qsort.bam') {
 		output.dir=temp_gene_info
-		exec """$SAMTOOLS sort -n $input.bam > $output.qsort.bam""", "samtools"
+		exec """$samtools sort -n $input.bam > $output.qsort.bam""", "samtools"
 	}
 }
 
@@ -217,9 +217,9 @@ assemble_transcripts = {
 
 	transform('.gene.bam') to(output_file)  {
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1""", "stringtie"
+			exec """$stringtie $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01""", "stringtie"
+			exec """$stringtie $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01""", "stringtie"
 		}
 		
 	}
@@ -232,9 +232,9 @@ assemble_transcripts_pure = {
 
 	transform('.gene.bam') to(output_file) {
 		if(conservative == "true"){
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1 -e""", "stringtie"
+			exec """$stringtie $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.1 -e""", "stringtie"
 		} else {
-			exec """$STRINGTIE $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01 -e""", "stringtie"
+			exec """$stringtie $input.gene.bam -G $GTF_REF -p $threads -o $output_file -c $c -f 0.01 -e""", "stringtie"
 		}
 		
 	}
@@ -245,7 +245,7 @@ merge_original = {
 	produce(resources_folder + '/assembly.combined.gtf'){
 			output.dir=resources_folder
 			def gtf = resources_folder+"/"+gene+".gtf"
-			exec """$STRINGTIE --merge -G $gtf -p $threads -T $tpm -c $c -i $temp_assembly/*.assembly.gtf > $output.dir/assembly.combined.gtf"""
+			exec """$stringtie --merge -G $gtf -p $threads -T $tpm -c $c -i $temp_assembly/*.assembly.gtf > $output.dir/assembly.combined.gtf"""
 	}
 
 }
@@ -269,7 +269,7 @@ create_st = {
 	from("flattened.gtf")  produce(resources_folder + "/st.fasta"){
 		output.dir=resources_folder
 		def out_file = resources_folder + "/st.fasta"
-		exec """gffread $input -g $GENOME -w $out_file -W""", "supertranscript"
+		exec """$gffread $input -g $GENOME -w $out_file -W""", "supertranscript"
 	}
 
 }
@@ -280,7 +280,7 @@ get_fastq = {
 
 	transform(".qsort.bam") to (".o.fastq", ".0.fastq", ".all.fastq"){
 		output.dir = temp_seq
-		exec """$SAMTOOLS fastq -o $output1 -0 $output2 -s /dev/null -n $input.qsort.bam"""
+		exec """$samtools fastq -o $output1 -0 $output2 -s /dev/null -n $input.qsort.bam"""
 		exec """cat $output1 $output2 > $output3"""
 	}
 	
@@ -291,7 +291,7 @@ star_genome = {
 
 	output.dir = temp_folder+"/genome/"
 	from("st.fasta") produce("Genome"){
-		exec """$STAR --runMode genomeGenerate 
+		exec """$star --runMode genomeGenerate 
 						 --genomeDir $output.dir
 						 --limitGenomeGenerateRAM $g_mem 
 						 --runThreadN $threads 
@@ -309,7 +309,7 @@ star_align = {
 
 		def sample_name = branch.name+"_"
 		def genome_dir = temp_folder+"/genome/"
-		exec """$STAR --genomeDir $genome_dir
+		exec """$star --genomeDir $genome_dir
 					 --runMode alignReads
 					 --twopassMode Basic 
 					 --alignIntronMin 4 
@@ -334,7 +334,7 @@ star_index = {
 	output.dir = resources_folder
 	from(".bam") produce(branch.name+"_Aligned.sortedByCoord.out.bam.bai"){
 		def sample_name = branch.name
-		exec """$SAMTOOLS index $input""", "samtools"
+		exec """$samtools index $input""", "samtools"
 	}
 
 }
