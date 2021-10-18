@@ -1,4 +1,4 @@
-#!/bin/bash
+-#!/bin/bash
 
 ## Nabbed from Marek Cmero: https://github.com/Oshlack/MINTIE/blob/master/install_linux64.sh
 ## Marek adapted this from code by Nadia Davidson: https://github.com/Oshlack/JAFFA/blob/master/install_linux64.sh
@@ -8,16 +8,18 @@
 ## end of execution of this script. These paths can be changed if a different
 ## version of software is desired.
 
+mkdir -p tools/bin
 cd tools
+source activate slinker
 
 #a list of which programs need to be installed
-commands="bpipe samtools star gffread stringtie"
+commands="samtools gffread stringtie bpipe star"
 
 #installation methods
 function bpipe_install {
-    wget -O bpipe-0.9.9.5.tar.gz https://github.com/ssadedin/bpipe/releases/download/0.9.9.5/bpipe-0.9.9.5.tar.gz
-    tar -zxvf bpipe-0.9.9.5.tar.gz ; rm bpipe-0.9.9.5.tar.gz
-    ln -s $PWD/bpipe-0.9.9.5/bin/* $PWD/bin/
+    wget -O bpipe-0.9.9.9.tar.gz https://github.com/ssadedin/bpipe/releases/download/0.9.9.9/bpipe-0.9.9.9.tar.gz
+    tar -zxvf bpipe-0.9.9.9.tar.gz ; rm bpipe-0.9.9.9.tar.gz
+    ln -s $PWD/bpipe-0.9.9.9/bin/* $PWD/bin/
 }
 
 function samtools_install {
@@ -28,16 +30,20 @@ function samtools_install {
 
 function star_install {
     wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/2.7.3a.tar.gz
-    tar -jxvf 2.7.3a.tar.gz ; rm 2.7.3a.tar.gz
-    mv 2.7.3a star_2.7.3a
-    make prefix=$PWD -C star-2.7.3a/
+    tar -zxvf 2.7.3a.tar.gz ; rm 2.7.3a.tar.gz
+    mv STAR-2.7.3a star-2.7.3a
+    cd star-2.7.3a/source/
+    make prefix=$PWD STAR
+    cd ../../
+    ln -s $PWD/star-2.7.3a/source/STAR $PWD/bin/star
 }
 
 function gffread_install {
     wget --no-check-certificate https://github.com/gpertea/gffread/archive/refs/tags/v0.12.7.zip
     unzip v0.12.7.zip ; rm v0.12.7.zip
-    mv v0.12.7 gffread_0.12.7
-    make prefix=$PWD -C gffread_0.12.7/
+    mv v0.12.7 gffread-0.12.7
+    make prefix=$PWD release -C gffread-0.12.7/
+    ln -s $PWD/gffread-0.12.7/gffread $PWD/bin/gffread
 }
 
 function stringtie_install {
@@ -46,6 +52,7 @@ function stringtie_install {
     rm v2.1.7.zip
     mv v2.1.7 stringtie-2.1.7
     make prefix=$PWD -C stringtie-2.1.7/
+    ln -s $PWD/stringtie-2.1.7/stringtie $PWD/bin/stringtie
 }
 
 echo "// Path to tools used by the Slinker pipeline" > ../workflows/tools.groovy
@@ -60,11 +67,24 @@ for c in $commands ; do
     echo "$c=\"$c_path\"" >> ../workflows/tools.groovy
 done
 
+# Install Slinker and Canvas 
+pip install Slinker/.
+pip install Canvas/.
+cd ../
+
+# Install references
+if [ "$1"=="download" ]
+then
+wget --no-check-certificate https://ftp.ensembl.org/pub/release-96/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz -P references/
+wget --no-check-certificate https://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa.gz -P references/
+gunzip references/*.gz
+fi
+
 #loop through commands to check they are all installed
 echo "Checking that all required tools were installed:"
 Final_message="All commands installed successfully!"
 for c in $commands ; do
-    c_path=`which $PWD/bin/$c 2>/dev/null`
+    c_path=`which $PWD/tools/bin/$c 2>/dev/null`
     if [ -z $c_path ] ; then
     echo -n "WARNING: $c could not be found!!!! "
     echo "You will need to download and install $c manually, then add its path to workflows/tools.groovy"
