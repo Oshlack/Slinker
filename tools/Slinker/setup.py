@@ -13,8 +13,8 @@ setup(
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "numpy==1.18.1",
-        "pandas==1.2.3",
+        "numpy",
+        "pandas",
 		"pybedtools==0.8.1",
 		"pysam==0.15.4", 
         'Canvas'

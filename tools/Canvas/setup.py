@@ -15,8 +15,8 @@ setup(
     include_package_data=True,
     install_requires=[
 		"kaleido==0.1.0",
-        "numpy==1.18.1",
-        "pandas==1.2.3",
+        "numpy",
+        "pandas",
 		"plotly==4.14.3",
 		"pybedtools==0.8.1",
 		"pysam==0.15.4"
