@@ -158,7 +158,6 @@ temp_gene_info = temp_folder + "/gene_info"
 
 make_dir = {
 	produce("$temp_folder/info.log"){
-		def gene_folder = temp_source+"genes/"+gene+"/"
 
 		exec """mkdir -p $resources_folder;
 				mkdir -p $plots_folder;
