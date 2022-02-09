@@ -1,4 +1,4 @@
--#!/bin/bash
+#!/bin/bash
 
 ## Nabbed from Marek Cmero: https://github.com/Oshlack/MINTIE/blob/master/install_linux64.sh
 ## Marek adapted this from code by Nadia Davidson: https://github.com/Oshlack/JAFFA/blob/master/install_linux64.sh
@@ -73,7 +73,7 @@ pip install Canvas/.
 cd ../
 
 # Install references
-if [ "$1"=="download" ]
+if [ "$1" = "download" ];
 then
 wget --no-check-certificate https://ftp.ensembl.org/pub/release-96/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz -P references/
 wget --no-check-certificate https://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa.gz -P references/
