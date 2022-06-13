@@ -58,11 +58,11 @@ class Junctions():
 				for operation in cigar:
 					op_type = operation[0]
 					op_length = operation[1]
-					if (op_type == 4) or (op_type == 1):
+					if (op_type == 4) or (op_type == 1): # S / I
 						t += op_length
-					elif op_type == 4:
+					elif op_type == 2: # D
 						g += op_length
-					elif op_type == 3:
+					elif op_type == 3: # N
 						sj1 = read.reference_name + ":" + str(g) + "-" + str(g + op_length - 1)
 						if read.mapping_quality >= mapq:
 							unique[sj1] = unique.get(sj1, 0) + 1
